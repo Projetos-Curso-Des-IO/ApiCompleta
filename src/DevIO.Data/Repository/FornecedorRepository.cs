@@ -13,14 +13,15 @@ namespace DevIO.Data.Repository
 
         public async Task<Fornecedor> ObterFornecedorEndereco(Guid id)
         {
-            return await Db.Fornecedores.AsNoTracking()
+			//AsNoTracinkg() sem rastrar Entity sem salvar em memória +Rápido
+			return await Db.Fornecedores.AsNoTracking() 
                 .Include(c => c.Endereco)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<Fornecedor> ObterFornecedorProdutosEndereco(Guid id)
         {
-            return await Db.Fornecedores.AsNoTracking()
+            return await Db.Fornecedores.AsNoTracking() 
                 .Include(c => c.Produtos)
                 .Include(c => c.Endereco)
                 .FirstOrDefaultAsync(c => c.Id == id);
