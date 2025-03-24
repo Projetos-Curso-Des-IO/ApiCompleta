@@ -80,7 +80,7 @@ namespace ApiComp.Controllers
 			if (!result)
 				return BadRequest();
 
-			return Ok(result);
+			return Ok();
 		}
 
 
