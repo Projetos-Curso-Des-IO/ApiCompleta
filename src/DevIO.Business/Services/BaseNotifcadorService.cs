@@ -8,19 +8,23 @@ namespace DevIO.Business.Services
 {
     public abstract class BaseService
     {
-        private readonly INotificador _notificador;
 
-        protected BaseService(INotificador notificador)
+		
+		private readonly INotificador _notificador;
+
+		#region ctor
+		protected BaseService(INotificador notificador)
         {
             _notificador = notificador;
         }
+		#endregion
 
 
 
 
 
 
-        protected void Notificar(ValidationResult validationResult)
+		protected void Notificar(ValidationResult validationResult)
         {
             foreach (var error in validationResult.Errors)
             {
