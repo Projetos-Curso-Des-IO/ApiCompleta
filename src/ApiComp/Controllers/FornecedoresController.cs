@@ -2,6 +2,7 @@
 using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using DevIO.Business.Notificacoes;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.AccessControl;
 
@@ -15,14 +16,17 @@ namespace ApiComp.Controllers
         private readonly IFornecedorRepository _fornecedorRepository;
 		private readonly IFornecedorService _fornecedorService;
 		private readonly IMapper _mapper;
+		private readonly INotificador _notificador;
 
 		#region ctor
 		public FornecedoresController(IFornecedorRepository fornecedorRepository,
-									   IMapper mapper, IFornecedorService fornecedorService)
+									   IMapper mapper, IFornecedorService fornecedorService,
+									   INotificador notificador)
 		{
 			_fornecedorRepository = fornecedorRepository;
 			_mapper = mapper;
 			_fornecedorService = fornecedorService;
+			_notificador = notificador;
 		}
 		#endregion
 
@@ -77,10 +81,11 @@ namespace ApiComp.Controllers
 
 			var result = await _fornecedorService.Adicionar(fornecedor);
 
+			var msgNotificacao = _notificador.ObterNotificacoes();
 			if (!result)
-				return BadRequest();
+				return BadRequest(msgNotificacao);
 
-			return Ok();
+			return Ok(fornecedor);
 		}
 
 
@@ -94,8 +99,10 @@ namespace ApiComp.Controllers
 			var fornecedor = _mapper.Map<Fornecedor>(fornecedorView);
 
 			var result = await _fornecedorService.Atualizar(fornecedor);
+
+			var msgNotificacao = _notificador.ObterNotificacoes();
 			if (!result)
-				return BadRequest();
+				return BadRequest(msgNotificacao);
 
 			return Ok(fornecedor);
 		}
@@ -105,6 +112,7 @@ namespace ApiComp.Controllers
 		[HttpDelete("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> DeletarFornecedor(Guid id)
 		{
+
 			if (id == null)
 				return BadRequest(id);
 
@@ -113,8 +121,10 @@ namespace ApiComp.Controllers
 				return NotFound($"Id: {id}");
 
 			var result = await _fornecedorService.Remover(id);
+
+			var msgNotificacao = _notificador.ObterNotificacoes();
 			if (!result)
-				return BadRequest($"Id: {id}");
+				return BadRequest(msgNotificacao);
 
 			return Ok(fornecedor);
 		}
@@ -122,9 +132,12 @@ namespace ApiComp.Controllers
 
 
 	
-		public async Task<ActionResult<FornecedorViewModel>> ObterFornecedorEndereco(Guid id)
+		public async Task<FornecedorViewModel> ObterFornecedorEndereco(Guid id)
 		{
-			return _mapper.Map<ActionResult<FornecedorViewModel>>(await _fornecedorRepository.ObterFornecedorEndereco(id));
+			var _fornecedor = await _fornecedorRepository.ObterFornecedorEndereco(id);
+			var _fornecedorViewModel = _mapper.Map<FornecedorViewModel>(_fornecedor);
+
+			return _fornecedorViewModel;
 		}
 
 
