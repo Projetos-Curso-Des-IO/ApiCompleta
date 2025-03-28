@@ -50,20 +50,58 @@ namespace DevIO.Business.Services
 
 
 
+        //public async Task<bool> Atualizar(Fornecedor fornecedor)
+        //{
+        //    if (!ExecutarValidacao(new FornecedorValidation(), fornecedor)) return false;
+
+        //    if (_fornecedorRepository.Buscar(f => f.Documento == fornecedor.Documento && f.Id != fornecedor.Id).Result.Any())
+        //    {
+        //        Notificar("Já existe um fornecedor com este documento infomado.");
+        //        return false;
+        //    }
+
+        //    await _fornecedorRepository.Atualizar(fornecedor);
+        //    return true;
+        //}
+
+
+
         public async Task<bool> Atualizar(Fornecedor fornecedor)
         {
             if (!ExecutarValidacao(new FornecedorValidation(), fornecedor)) return false;
 
-            if (_fornecedorRepository.Buscar(f => f.Documento == fornecedor.Documento && f.Id != fornecedor.Id).Result.Any())
+         
+            var fornecedorExistente = await _fornecedorRepository.ObterPorId(fornecedor.Id);
+            if (fornecedorExistente == null)
             {
-                Notificar("Já existe um fornecedor com este documento infomado.");
+                Notificar("Fornecedor não encontrado para atualização.");
                 return false;
             }
 
-            await _fornecedorRepository.Atualizar(fornecedor);
-            return true;
-        }
+            // Verifica se o documento já existe em outro fornecedor
+            if (_fornecedorRepository.Buscar(f => f.Documento == fornecedor.Documento && f.Id != fornecedor.Id).Result.Any())
+            {
+                Notificar("Já existe um fornecedor com este documento informado.");
+                return false;
+            }
 
+            try
+            {
+                // Atualiza apenas as propriedades necessárias
+                fornecedorExistente.Nome = fornecedor.Nome;
+                fornecedorExistente.Documento = fornecedor.Documento;
+                fornecedorExistente.TipoFornecedor = fornecedor.TipoFornecedor;
+                fornecedorExistente.Ativo = fornecedor.Ativo;
+
+                await _fornecedorRepository.Atualizar(fornecedorExistente);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Notificar($"Erro ao atualizar fornecedor: {ex.Message}");
+                return false;
+            }
+        }
 
 
 

@@ -85,7 +85,9 @@ namespace ApiComp.Controllers
 			if (!result)
 				return BadRequest(msgNotificacao);
 
-			return Ok(fornecedor);
+			var forneceroView = _mapper.Map<FornecedorViewModel>(fornecedor);
+
+			return Ok(fornecedorView);
 		}
 
 

@@ -38,11 +38,28 @@ namespace DevIO.Data.Repository
             await SaveChanges();
         }
 
+        //public virtual async Task Atualizar(TEntity entity)
+        //{
+        //    DbSet.Update(entity);
+        //    await SaveChanges();
+        //}
+
+
         public virtual async Task Atualizar(TEntity entity)
         {
-            DbSet.Update(entity);
+            // Primeiro verifica se a entidade existe
+            var existingEntity = await DbSet.FindAsync(entity.Id);
+
+            if (existingEntity == null)
+            {
+                throw new KeyNotFoundException($"Entidade com ID {entity.Id} não encontrada.");
+            }
+
+            // Atualiza as propriedades da entidade existente
+            Db.Entry(existingEntity).CurrentValues.SetValues(entity);
             await SaveChanges();
         }
+
 
         public virtual async Task Remover(Guid id)
         {
