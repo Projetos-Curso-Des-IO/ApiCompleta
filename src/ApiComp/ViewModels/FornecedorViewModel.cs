@@ -19,9 +19,12 @@ namespace ApiComp.ViewModels
 		[Range(0, 1, ErrorMessage = "O Tipo do Fornecedor deve ser 0 (Pessoa Física) ou 1 (Pessoa Jurídica).")]
 		public int TipoFornecedor { get; set; }
 
-
 		public bool Ativo { get; set; }
 
+		public EnderecoViewModel Endereco { get; set; }
+
+		////Lista de produtos
+		//public IEnumerable<ProdutoViewModel> Produto { get; set; }
 
 	}
 }
