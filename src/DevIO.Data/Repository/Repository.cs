@@ -57,6 +57,7 @@ namespace DevIO.Data.Repository
 
             // Atualiza as propriedades da entidade existente
             Db.Entry(existingEntity).CurrentValues.SetValues(entity);
+            DbSet.Update(existingEntity);
             await SaveChanges();
         }
 

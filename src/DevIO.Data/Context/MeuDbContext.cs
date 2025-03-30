@@ -29,7 +29,9 @@ namespace DevIO.Data.Context
             base.OnModelCreating(modelBuilder);
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+		// Define automaticamente a DataCadastro ao adicionar um novo registro  
+		// Impede que a DataCadastro seja alterada ao modificar um registro  
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity.GetType().GetProperty("DataCadastro") != null))
             {
