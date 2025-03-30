@@ -38,12 +38,6 @@ namespace DevIO.Data.Repository
             await SaveChanges();
         }
 
-        //public virtual async Task Atualizar(TEntity entity)
-        //{
-        //    DbSet.Update(entity);
-        //    await SaveChanges();
-        //}
-
 
         public virtual async Task Atualizar(TEntity entity)
         {

@@ -81,9 +81,11 @@ namespace ApiComp.Controllers
 
 			var result = await _fornecedorService.Adicionar(fornecedor);
 
+
 			var msgNotificacao = _notificador.ObterNotificacoes();
 			if (!result)
 				return BadRequest(msgNotificacao);
+
 
 			var forneceroView = _mapper.Map<FornecedorViewModel>(fornecedor);
 

@@ -31,15 +31,12 @@ namespace DevIO.Business.Services
 			#region validationn
 			if (!ExecutarValidacao(new FornecedorValidation(), fornecedor) 
                 || !ExecutarValidacao(new EnderecoValidation(), fornecedor.Endereco)) return false;
-			#endregion
+            #endregion
 
 
-			if (_fornecedorRepository.Buscar(f => f.Documento == fornecedor.Documento).Result.Any())
-            {
-                Notificar("Já existe um fornecedor com este documento infomado.");
-                return false;
-            }
-
+            if (_fornecedorRepository.Buscar(f => f.Documento == fornecedor.Documento).Result.Any())
+                return NotificarERetornar("Já existe um fornecedor com este documento infomado.");
+            
 
             await _fornecedorRepository.Adicionar(fornecedor);
             return true;
@@ -50,37 +47,23 @@ namespace DevIO.Business.Services
         public async Task<bool> Atualizar(Fornecedor fornecedor)
         {
             if (!ExecutarValidacao(new FornecedorValidation(), fornecedor)) return false;
-
          
             var fornecedorExistente = await _fornecedorRepository.ObterPorId(fornecedor.Id);
-            if (fornecedorExistente == null)
-            {
-                Notificar("Fornecedor não encontrado para atualização.");
-                return false;
-            }
+            if (fornecedorExistente == null) 
+                return NotificarERetornar("Fornecedor não encontrado para atualização.");
 
-            // Verifica se o documento já existe em outro fornecedor
+            
             if (_fornecedorRepository.Buscar(f => f.Documento == fornecedor.Documento && f.Id != fornecedor.Id).Result.Any())
-            {
-                Notificar("Já existe um fornecedor com este documento informado.");
-                return false;
-            }
+                return NotificarERetornar("Já existe um fornecedor com este documento informado.");
 
             try
             {
-                // Atualiza apenas as propriedades necessárias
-                fornecedorExistente.Nome = fornecedor.Nome;
-                fornecedorExistente.Documento = fornecedor.Documento;
-                fornecedorExistente.TipoFornecedor = fornecedor.TipoFornecedor;
-                fornecedorExistente.Ativo = fornecedor.Ativo;
-
-                await _fornecedorRepository.Atualizar(fornecedorExistente);
-                return true;
+				await _fornecedorRepository.Atualizar(fornecedor);
+				return true;
             }
             catch (Exception ex)
             {
-                Notificar($"Erro ao atualizar fornecedor: {ex.Message}");
-                return false;
+                return NotificarERetornar($"Erro ao atualizar fornecedor: {ex.Message}");
             }
         }
 
@@ -104,11 +87,8 @@ namespace DevIO.Business.Services
 
         public async Task<bool> Remover(Guid id)
         {
-            if (_fornecedorRepository.ObterFornecedorProdutosEndereco(id).Result.Produtos.Any())
-            {
-                Notificar("O fornecedor possui produtos cadastrados!");
-                return false;
-            }
+            if (_fornecedorRepository.ObterFornecedorProdutosEndereco(id).Result.Produtos.Any())            
+                return NotificarERetornar("O fornecedor possui produtos cadastrados!");            
 
             var endereco = await _enderecoRepository.ObterEnderecoPorFornecedor(id);
 
@@ -120,17 +100,29 @@ namespace DevIO.Business.Services
             await _fornecedorRepository.Remover(id);
             return true;
         }
-
 		#endregion
 
 
 
 
-
+		#region dispose
 		public void Dispose()
         {
             _fornecedorRepository?.Dispose();
             _enderecoRepository?.Dispose();
         }
-    }
+		#endregion
+
+
+
+
+		#region NotificarERetornar
+		private bool NotificarERetornar(string mensagem)
+        {
+            Notificar(mensagem);
+			return false;
+        }
+		#endregion
+
+	}
 }
