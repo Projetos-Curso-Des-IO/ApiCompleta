@@ -97,11 +97,12 @@ namespace ApiComp.Controllers
 		[HttpPut("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> AtulizarFonecedor(Guid id, FornecedorViewModel fornecedorView)
 		{
+			if (id != fornecedorView.Id) return BadRequest();
+
 			if (!ModelState.IsValid)
-				return BadRequest();
+				return BadRequest(ModelState);
 
 			var fornecedor = _mapper.Map<Fornecedor>(fornecedorView);
-
 			var result = await _fornecedorService.Atualizar(fornecedor);
 
 			var msgNotificacao = _notificador.ObterNotificacoes();
