@@ -21,10 +21,9 @@ namespace ApiComp.ViewModels
 
 		public bool Ativo { get; set; }
 
-		public EnderecoViewModel Endereco { get; set; }
+		public EnderecoViewModel? Endereco { get; set; }
 
-		//Lista de produtos
-		//public IEnumerable<ProdutoViewModel> Produto { get; set; }
+		public IEnumerable<ProdutoViewModel>? Produto { get; set; }
 
 	}
 }
