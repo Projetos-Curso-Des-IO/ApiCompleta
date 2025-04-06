@@ -48,29 +48,33 @@ namespace ApiComp.Controllers
         }
 
 
+
+
+
 		[HttpGet("recuperarPorId/{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> ObterPorId(Guid id)
 		{
-			var fornecedores = _mapper.Map<FornecedorViewModel>
-				(await _fornecedorRepository.ObterPorId(id));
-
+			var fornecedores = await _fornecedorRepository.ObterPorId(id);
 			if (fornecedores == null)
 				return NotFound($"Id: {id}");
 
-			return fornecedores;
+			var fornecedorView = _mapper.Map <FornecedorViewModel>(fornecedores);
+			return fornecedorView;
 		}
 
 
 
-		[HttpGet("{id:Guid}")]
+
+
+		[HttpGet("obterFornecedorProdutosEndereco/{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> ObterFornecedorProdutosEndereco(Guid id)
 		{
-			var fornecedor = _mapper.Map<ActionResult<FornecedorViewModel>>(await _fornecedorRepository.ObterFornecedorProdutosEndereco(id));
-
+			var fornecedor = await _fornecedorRepository.ObterFornecedorProdutosEndereco(id);
 			if (fornecedor == null)
 				return NotFound($"Id: {id}");
 
-			return fornecedor;
+			var forncedorView = _mapper.Map<FornecedorViewModel> (fornecedor);
+			return forncedorView;
 		}
 
 
@@ -82,14 +86,12 @@ namespace ApiComp.Controllers
 				return BadRequest();
 
 			var fornecedor = _mapper.Map<Fornecedor>(fornecedorView);
-
 			var result = await _fornecedorService.Adicionar(fornecedor);
 
 
 			var msgNotificacao = _notificador.ObterNotificacoes();
 			if (!result)
 				return BadRequest(msgNotificacao);
-
 
 			var forneceroView = _mapper.Map<FornecedorViewModel>(fornecedor);
 
