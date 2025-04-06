@@ -38,7 +38,9 @@ namespace ApiComp.Controllers
 		public async Task<ActionResult<IEnumerable<FornecedorViewModel>>> ObterTodos()
         {
 			//Banco → (Fornecedor) → AutoMapper → (FornecedorViewModel) → Retorno na API ✅
-			var fornecedores = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
+			var fornecedores = _mapper.Map<IEnumerable<FornecedorViewModel>>
+				(await _fornecedorRepository.ObterTodos());
+
 			if(!fornecedores.Any())
 				return NotFound("Lista vazia.");
 
@@ -46,10 +48,12 @@ namespace ApiComp.Controllers
         }
 
 
-		[HttpGet("{id:Guid}")]
+		[HttpGet("recuperarPorId/{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> ObterPorId(Guid id)
 		{
-			var fornecedores = _mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterPorId(id));
+			var fornecedores = _mapper.Map<FornecedorViewModel>
+				(await _fornecedorRepository.ObterPorId(id));
+
 			if (fornecedores == null)
 				return NotFound($"Id: {id}");
 
