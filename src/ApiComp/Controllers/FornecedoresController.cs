@@ -21,7 +21,7 @@ namespace ApiComp.Controllers
 		#region ctor
 		public FornecedoresController(IFornecedorRepository fornecedorRepository,
 									   IMapper mapper, IFornecedorService fornecedorService,
-									   INotificador notificador)
+									   INotificador notificador) : base(notificador)
 		{
 			_fornecedorRepository = fornecedorRepository;
 			_mapper = mapper;
@@ -79,24 +79,22 @@ namespace ApiComp.Controllers
 
 
 
+
+
+
 		[HttpPost]
 		public async Task<ActionResult<FornecedorViewModel>> CriarFornecedor(FornecedorViewModel fornecedorView)
 		{
 			if (!ModelState.IsValid)
-				return BadRequest();
+				return CustomResponse(ModelState);
+			
+			await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(fornecedorView));
 
-			var fornecedor = _mapper.Map<Fornecedor>(fornecedorView);
-			var result = await _fornecedorService.Adicionar(fornecedor);
-
-
-			var msgNotificacao = _notificador.ObterNotificacoes();
-			if (!result)
-				return BadRequest(msgNotificacao);
-
-			var forneceroView = _mapper.Map<FornecedorViewModel>(fornecedor);
-
-			return Ok(fornecedorView);
+			return Ok(CustomResponse(fornecedorView));
 		}
+
+
+
 
 
 
@@ -105,27 +103,22 @@ namespace ApiComp.Controllers
 		{
 			if (id != fornecedorView.Id) return BadRequest();
 
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+			if (!ModelState.IsValid) return CustomResponse(ModelState);
+			
+			await _fornecedorService.Atualizar(_mapper.Map<Fornecedor>(fornecedorView));
 
-			var fornecedor = _mapper.Map<Fornecedor>(fornecedorView);
-			var result = await _fornecedorService.Atualizar(fornecedor);
-
-			var msgNotificacao = _notificador.ObterNotificacoes();
-			if (!result)
-				return BadRequest(msgNotificacao);
-
-			return Ok(fornecedor);
+			return Ok(CustomResponse(fornecedorView));
 		}
+
+
+
 
 
 
 		[HttpDelete("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> DeletarFornecedor(Guid id)
 		{
-
-			if (id == null)
-				return BadRequest(id);
+			if (id == null) return BadRequest(id);
 
 			var fornecedor = await ObterFornecedorEndereco(id);
 			if (fornecedor == null)
