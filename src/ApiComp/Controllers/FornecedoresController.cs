@@ -12,11 +12,12 @@ namespace ApiComp.Controllers
 	[Route("api/fornecedores")]
 	public class FornecedoresController : MainController
 	{
-
-        private readonly IFornecedorRepository _fornecedorRepository;
+		#region dependency
+		private readonly IFornecedorRepository _fornecedorRepository;
 		private readonly IFornecedorService _fornecedorService;
 		private readonly IMapper _mapper;
 		private readonly INotificador _notificador;
+		#endregion
 
 		#region ctor
 		public FornecedoresController(IFornecedorRepository fornecedorRepository,
@@ -31,20 +32,14 @@ namespace ApiComp.Controllers
 		#endregion
 
 
-
-
-		#region methods
+		#region Actions
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<FornecedorViewModel>>> ObterTodos()
         {
-			//Banco → (Fornecedor) → AutoMapper → (FornecedorViewModel) → Retorno na API ✅
-			var fornecedores = _mapper.Map<IEnumerable<FornecedorViewModel>>
-				(await _fornecedorRepository.ObterTodos());
+			var _fornecedoresView = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
+			if(!_fornecedoresView.Any()) return NotFound("Lista vazia.");
 
-			if(!fornecedores.Any())
-				return NotFound("Lista vazia.");
-
-			return Ok(fornecedores);
+			return Ok(CustomResponse(_fornecedoresView));
         }
 
 
@@ -54,12 +49,11 @@ namespace ApiComp.Controllers
 		[HttpGet("recuperarPorId/{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> ObterPorId(Guid id)
 		{
-			var fornecedores = await _fornecedorRepository.ObterPorId(id);
-			if (fornecedores == null)
-				return NotFound($"Id: {id}");
+			var _fornecedores = await _fornecedorRepository.ObterPorId(id);
+			if (_fornecedores == null) return NotFound($"Id: {id}");
 
-			var fornecedorView = _mapper.Map <FornecedorViewModel>(fornecedores);
-			return fornecedorView;
+			var _fornecedorView = _mapper.Map <FornecedorViewModel>(_fornecedores);
+			return Ok(CustomResponse(_fornecedorView));
 		}
 
 
@@ -69,15 +63,12 @@ namespace ApiComp.Controllers
 		[HttpGet("obterFornecedorProdutosEndereco/{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> ObterFornecedorProdutosEndereco(Guid id)
 		{
-			var fornecedor = await _fornecedorRepository.ObterFornecedorProdutosEndereco(id);
-			if (fornecedor == null)
-				return NotFound($"Id: {id}");
+			var _fornecedor = await _fornecedorRepository.ObterFornecedorProdutosEndereco(id);
+			if (_fornecedor == null) return NotFound($"Id: {id}");
 
-			var forncedorView = _mapper.Map<FornecedorViewModel> (fornecedor);
-			return forncedorView;
+			var _forncedorView = _mapper.Map<FornecedorViewModel> (_fornecedor);
+			return Ok(CustomResponse(_forncedorView));
 		}
-
-
 
 
 
@@ -85,11 +76,9 @@ namespace ApiComp.Controllers
 		[HttpPost]
 		public async Task<ActionResult<FornecedorViewModel>> CriarFornecedor(FornecedorViewModel fornecedorView)
 		{
-			if (!ModelState.IsValid)
-				return CustomResponse(ModelState);
+			if (!ModelState.IsValid) return CustomResponse(ModelState);
 			
 			await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(fornecedorView));
-
 			return Ok(CustomResponse(fornecedorView));
 		}
 
@@ -102,14 +91,11 @@ namespace ApiComp.Controllers
 		public async Task<ActionResult<FornecedorViewModel>> AtulizarFonecedor(Guid id, FornecedorViewModel fornecedorView)
 		{
 			if (id != fornecedorView.Id) return BadRequest();
-
 			if (!ModelState.IsValid) return CustomResponse(ModelState);
 			
 			await _fornecedorService.Atualizar(_mapper.Map<Fornecedor>(fornecedorView));
-
 			return Ok(CustomResponse(fornecedorView));
 		}
-
 
 
 
@@ -118,24 +104,16 @@ namespace ApiComp.Controllers
 		[HttpDelete("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> DeletarFornecedor(Guid id)
 		{
-			if (id == null) return BadRequest(id);
+			if (id == Guid.Empty) return BadRequest("ID inválido.");
+			if (await ObterFornecedorEndereco(id) == null) return NotFound($"Fornecedor com Id: {id} não encontrado.");
 
-			var fornecedor = await ObterFornecedorEndereco(id);
-			if (fornecedor == null)
-				return NotFound($"Id: {id}");
-
-			var result = await _fornecedorService.Remover(id);
-
-			var msgNotificacao = _notificador.ObterNotificacoes();
-			if (!result)
-				return BadRequest(msgNotificacao);
-
-			return Ok(fornecedor);
+			await _fornecedorService.Remover(id);
+			return NoContent();
 		}
+		#endregion
 
 
-
-	
+		#region	Private Methods
 		public async Task<FornecedorViewModel> ObterFornecedorEndereco(Guid id)
 		{
 			var _fornecedor = await _fornecedorRepository.ObterFornecedorEndereco(id);
@@ -143,9 +121,8 @@ namespace ApiComp.Controllers
 
 			return _fornecedorViewModel;
 		}
-
-
-
 		#endregion
+
+
 	}
 }
