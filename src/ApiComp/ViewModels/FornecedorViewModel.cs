@@ -23,7 +23,8 @@ namespace ApiComp.ViewModels
 
 		public EnderecoViewModel? Endereco { get; set; }
 
-		public IEnumerable<ProdutoViewModel>? Produto { get; set; }
+        //public IEnumerable<ProdutoViewModel>? Produto { get; set; }
+        public IEnumerable<ProdutoViewModel>? Produto { get; set; }
 
-	}
+    }
 }
