@@ -1,6 +1,7 @@
 ﻿using ApiComp.ViewModels;
 using AutoMapper;
 using DevIO.Business.Intefaces;
+using DevIO.Business.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,11 +38,27 @@ namespace ApiComp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProdutoViewModel>>> ObterTodos()
         {
-            var _produtoView =  _mapper.Map<IEnumerable<ProdutoViewModel>>(await _produtoRepository.ObterTodos());
+            var _produtoView =  _mapper.Map<IEnumerable<ProdutoViewModel>>(await _produtoRepository.ObterProdutosFornecedores());
             if(!_produtoView.Any()) return NotFound("Lista vazia");
             
             return Ok(CustomResponse(_produtoView));
         }
+
+
+
+
+        [HttpPost]
+        public async Task<ActionResult<ProdutoViewModel>> CriarProduto(ProdutoViewModel produtoViewModel)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+            return Ok(CustomResponse(produtoViewModel));
+        }
+
+
+
+
         #endregion
 
 
