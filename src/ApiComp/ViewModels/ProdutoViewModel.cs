@@ -13,9 +13,9 @@ namespace ApiComp.ViewModels
 		[StringLength(500, ErrorMessage = "A Descrição deve ter no máximo 500 caracteres.")]
 		public string Descricao { get; set; }
 
-		public string UploadImagem { get; set; }
+		public string ImagemUpload { get; set; }
 
-		public string Imagem { get; set; }
+		public string NomeDaImagem { get; set; }
 
 		[Required(ErrorMessage = "O Valor é obrigatório.")]
 		[Range(0.01, double.MaxValue, ErrorMessage = "O Valor deve ser maior que zero.")]
