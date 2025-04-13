@@ -66,13 +66,13 @@ namespace ApiComp.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var imagemNome = Guid.NewGuid() + "_" + produtoViewModel.NomeDaImagem;
+            var imagemNome = Guid.NewGuid() + "_" + produtoViewModel.Imagem;
             if(!UploadArquivo(produtoViewModel.ImagemUpload, imagemNome))
             {
                 return CustomResponse(produtoViewModel);
             }
 
-            produtoViewModel.NomeDaImagem = imagemNome;
+            produtoViewModel.Imagem = imagemNome;
             await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
 
             return Ok(CustomResponse(produtoViewModel));
