@@ -15,7 +15,7 @@ namespace ApiComp.ViewModels
 
 		public string ImagemUpload { get; set; }
 
-		public string NomeDaImagem { get; set; }
+		public string Imagem { get; set; }
 
 		[Required(ErrorMessage = "O Valor é obrigatório.")]
 		[Range(0.01, double.MaxValue, ErrorMessage = "O Valor deve ser maior que zero.")]
