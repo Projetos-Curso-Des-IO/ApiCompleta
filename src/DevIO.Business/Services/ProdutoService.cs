@@ -41,18 +41,30 @@ namespace DevIO.Business.Services
 
 
 
-        public async Task Remover(Guid id)
+        public async Task<bool> Remover(Guid id)
         {
-            await _produtoRepository.Remover(id);
-        }
+			var produto = await _produtoRepository.ObterPorId(id);
+
+			if (produto != null) 
+            {
+				await _produtoRepository.Remover(id);
+				return true;
+			}
+            return NotificarERetornar($"Produto com {id} não encontrado para remoção.");
+			
+		}
+
+
+		private bool NotificarERetornar(string mensagem)
+		{
+			Notificar(mensagem);
+			return false;
+		}
 
 
 
 
-
-
-
-        public void Dispose()
+		public void Dispose()
         {
             _produtoRepository?.Dispose();
         }
