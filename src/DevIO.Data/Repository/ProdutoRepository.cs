@@ -1,5 +1,6 @@
 ﻿using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using DevIO.Business.Notificacoes;
 using DevIO.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,5 +26,8 @@ namespace DevIO.Data.Repository
         {
             return await Buscar(p => p.FornecedorId == fornecedorId);
         }
-    }
+
+
+
+	}
 }

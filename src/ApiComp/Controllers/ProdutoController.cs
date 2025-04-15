@@ -82,6 +82,19 @@ namespace ApiComp.Controllers
 
 
 
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult<ProdutoViewModel>> ExcluirProduto(Guid id)
+        {
+            if (id == Guid.Empty) return BadRequest("ID invàlido.");
+
+            var produtoRemovido =  await _produtoService.Remover(id);
+            if (produtoRemovido)
+            {
+				return NoContent();
+			}
+            return CustomResponse();
+        }
+
 
 		#endregion
 
@@ -126,10 +139,6 @@ namespace ApiComp.Controllers
 
 			return true;
         }
-
-
-
-
 		#endregion
 	}
 }

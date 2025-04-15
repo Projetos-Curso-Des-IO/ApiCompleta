@@ -6,6 +6,6 @@ namespace DevIO.Business.Intefaces
     {
         Task Adicionar(Produto produto);
         Task Atualizar(Produto produto);
-        Task Remover(Guid id);
+        Task<bool> Remover(Guid id);
     }
 }
