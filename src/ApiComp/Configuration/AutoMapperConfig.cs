@@ -8,11 +8,12 @@ namespace ApiComp.Configuration
 	{
 		public AutoMapperConfig()
 		{
-            //CreateMap<Fornecedor, FornecedorViewModel>().ReverseMap();
             CreateMap<Fornecedor, FornecedorViewModel>()
 				.ForMember(dest => dest.Produto, opt => opt.MapFrom(src => src.Produtos)).ReverseMap();
             CreateMap<Endereco, EnderecoViewModel>().ReverseMap();
-			CreateMap<Produto, ProdutoViewModel>().ReverseMap();
+            CreateMap<ProdutoViewModel, Produto>();
+            CreateMap<Produto, ProdutoViewModel>()
+				.ForMember(destinationMember: dest => dest.NomeFornecedor, memberOptions: opt => opt.MapFrom(mapExpression:src => src.Fornecedor.Nome));
 		}
 	}
 }
