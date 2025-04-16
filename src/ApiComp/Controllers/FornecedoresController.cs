@@ -42,7 +42,7 @@ namespace ApiComp.Controllers
 			var _fornecedoresView = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
 			if(!_fornecedoresView.Any()) return NotFound("Lista vazia.");
 
-			return Ok(CustomResponse(_fornecedoresView));
+			return Ok(_fornecedoresView);
         }
 
 		

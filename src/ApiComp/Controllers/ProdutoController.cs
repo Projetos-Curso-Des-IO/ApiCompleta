@@ -44,7 +44,7 @@ namespace ApiComp.Controllers
 
             if(!_produtoView.Any()) return NotFound("Lista vazia");
             
-            return Ok(CustomResponse(_produtoView));
+            return Ok(_produtoView);
         }
 
 

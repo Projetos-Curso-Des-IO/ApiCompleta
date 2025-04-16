@@ -17,6 +17,18 @@ builder.Services.AddDbContext<MeuDbContext>(options =>
 	);
 });
 
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("Development", policy =>
+	{
+		policy.WithOrigins("http://localhost:4200")  // coloque a URL do seu front-end aqui
+			  .AllowAnyMethod()
+			  .AllowAnyHeader()
+			  .AllowCredentials();
+	});
+});
+
+
 builder.Services.ResolverDependencias();
 
 builder.Services.AddControllers();
@@ -37,6 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("Development");
 
 app.UseAuthorization();
 
