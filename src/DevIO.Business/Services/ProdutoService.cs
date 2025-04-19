@@ -1,35 +1,41 @@
-﻿using DevIO.Business.Intefaces;
+﻿using AutoMapper;
+using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
 using DevIO.Business.Models.Validations;
+using DevIO.Business.Notificacoes;
 
 namespace DevIO.Business.Services
 {
     public class ProdutoService : BaseService, IProdutoService
     {
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IMapper _mapper;
+		private readonly INotificador _notificador;
 
-        public ProdutoService(IProdutoRepository produtoRepository,
-                              INotificador notificador) : base(notificador)
-        {
-            _produtoRepository = produtoRepository;
-        }
-
-
-
-
-        public async Task Adicionar(Produto produto)
-        {
-            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
-
-            await _produtoRepository.Adicionar(produto);
-        }
+		public ProdutoService(IProdutoRepository produtoRepository,
+							  INotificador notificador,
+							  IMapper mapper) : base(notificador)
+		{
+			_produtoRepository = produtoRepository;
+			_mapper = mapper;
+			_notificador = notificador;
+		}
 
 
 
 
+		public async Task Adicionar(Produto produto)
+		{
+			if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+
+			await _produtoRepository.Adicionar(produto);
+		}
 
 
-        public async Task Atualizar(Produto produto)
+
+
+
+		public async Task Atualizar(Produto produto)
         {
             if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
 
@@ -55,6 +61,18 @@ namespace DevIO.Business.Services
 		}
 
 
+
+
+
+
+		protected void NotificarErro(string mensagem)
+		{
+			_notificador.Handle(new Notificacao(mensagem));
+		}
+
+
+
+
 		private bool NotificarERetornar(string mensagem)
 		{
 			Notificar(mensagem);
@@ -68,5 +86,8 @@ namespace DevIO.Business.Services
         {
             _produtoRepository?.Dispose();
         }
-    }
+
+
+		
+	}
 }
