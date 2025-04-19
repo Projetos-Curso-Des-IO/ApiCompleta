@@ -12,8 +12,15 @@ namespace ApiComp.Configuration
 				.ForMember(dest => dest.Produto, opt => opt.MapFrom(src => src.Produtos)).ReverseMap();
             CreateMap<Endereco, EnderecoViewModel>().ReverseMap();
             CreateMap<ProdutoViewModel, Produto>();
+			CreateMap<ProdutoImgViewModel, Produto>().ReverseMap();
+
             CreateMap<Produto, ProdutoViewModel>()
-				.ForMember(destinationMember: dest => dest.NomeFornecedor, memberOptions: opt => opt.MapFrom(mapExpression:src => src.Fornecedor.Nome));
+				.ForMember(dest => dest.NomeFornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome));
+
+
+			CreateMap<Produto, ProdutoImgViewModel>()
+				.ForMember(dest => dest.NomeFornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome));
 		}
+
 	}
 }

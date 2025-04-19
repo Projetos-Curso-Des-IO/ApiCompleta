@@ -4,7 +4,9 @@ using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
 using DevIO.Business.Notificacoes;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ApiComp.Controllers
 {
@@ -37,9 +39,9 @@ namespace ApiComp.Controllers
 
         #region actions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProdutoViewModel>>> ObterTodos()
+        public async Task<ActionResult<IEnumerable<ProdutoImgViewModel>>> ObterTodos()
         {
-            var _produtoView =  _mapper.Map<IEnumerable<ProdutoViewModel>>
+            var _produtoView =  _mapper.Map<IEnumerable<ProdutoImgViewModel>>
                 (await _produtoRepository.ObterProdutosFornecedores());
 
             if(!_produtoView.Any()) return NotFound("Lista vazia");
@@ -50,7 +52,7 @@ namespace ApiComp.Controllers
 
 
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<ProdutoViewModel>> ObterPorId(Guid id)
+        public async Task<ActionResult<ProdutoImgViewModel>> ObterPorId(Guid id)
         {
             var _produtoView = await ObterProdutoPorId(id);
                 if (_produtoView.Value == null) return NotFound($"Produto não encontrado - ID: {id}");
@@ -61,29 +63,44 @@ namespace ApiComp.Controllers
 
 
 
-        [HttpPost]
-        public async Task<ActionResult<ProdutoViewModel>> CriarProduto(ProdutoViewModel produtoViewModel)
-        {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var imagemNome = Guid.NewGuid() + "_" + produtoViewModel.Imagem;
-            if(!UploadArquivo(produtoViewModel.ImagemUpload, imagemNome))
-            {
-                return CustomResponse(produtoViewModel);
-            }
+		[HttpPost("adicionar")]
+		[RequestSizeLimit(52428800)]
+		public async Task<ActionResult<ProdutoViewModel>> CriarProduto(ProdutoImgViewModel produtoViewModel)
+		{
+			//if (produtoViewModel == null) return BadRequest("Fornecedor é inválido, verifique.");
+			if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            produtoViewModel.Imagem = imagemNome;
-            await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+			var imagemPrefix = Guid.NewGuid() + "_";
+			if (!await UploadArquivoAlternativo(produtoViewModel.ImagemUpload, imagemPrefix))
+			{
+				return CustomResponse(produtoViewModel);
+			}
 
-            return Ok(CustomResponse(produtoViewModel));
-        }
+			var arquivo = produtoViewModel.ImagemUpload.FileName;
+
+			produtoViewModel.Imagem = imagemPrefix + arquivo;
+
+			await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+
+			return Ok(CustomResponse(produtoViewModel));
+		}
+
+
+
+		
+		[HttpPost("imagem")]
+		public async Task<ActionResult> CriarImagem(IFormFile file)
+		{
+			return Ok(file);
+		}
 
 
 
 
 
-        [HttpDelete("{id:guid}")]
-        public async Task<ActionResult<ProdutoViewModel>> ExcluirProduto(Guid id)
+		[HttpDelete("{id:guid}")]
+        public async Task<ActionResult<ProdutoImgViewModel>> ExcluirProduto(Guid id)
         {
             if (id == Guid.Empty) return BadRequest("ID invàlido.");
 
@@ -104,41 +121,42 @@ namespace ApiComp.Controllers
 
 
 		#region methods
-        public async Task<ActionResult<ProdutoViewModel>> ObterProdutoPorId(Guid id)
+        public async Task<ActionResult<ProdutoImgViewModel>> ObterProdutoPorId(Guid id)
         {            
-			var _produtoView = _mapper.Map<ProdutoViewModel>
+			var _produtoView = _mapper.Map<ProdutoImgViewModel>
                 (await _produtoRepository.ObterPorId(id));          
             return _produtoView;
         }
 
 
 
-
-		// Método para fazer upload de um arquivo de imagem codificado em base64
-		private bool UploadArquivo(string arquivo, string imgNome)
-        {
-			// Converte a string base64 para um array de bytes (dados binários da imagem)
-			var imagemDataByteArray = Convert.FromBase64String(arquivo);
-
-			if (string.IsNullOrEmpty(arquivo))
+		private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, string imgPrefix)
+		{
+			if (arquivo == null || arquivo.Length == 0)
 			{
-                NotificarErro("Forneça imagem para este produto!");
-                return false;
+				NotificarErro("Forneça imagem para este produto!");
+				return false;
 			}
 
-			var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/app/demo-webapi/src/assets", imgNome);
+			var filePath = Path.Combine
+						(
+							Directory.GetCurrentDirectory(), 
+							"wwwroot/app/demo-webapi/src/assets", 
+							imgPrefix + arquivo.FileName
+						);
 
 			if (System.IO.File.Exists(filePath))
 			{
-                NotificarErro("Já existe um arquivo com este nome!");
+				NotificarErro("Já existe um arquivo com este nome!");
 				return false;
 			}
-            
-            // Gerar arquivo = caminho + imgBytes
-            System.IO.File.WriteAllBytes(filePath, imagemDataByteArray);
 
+			//FileStream canal de escrita para arquivo fisico no disco
+			using var stream = new FileStream(filePath, FileMode.Create);
+			await arquivo.CopyToAsync(stream);
 			return true;
-        }
+		}
+
 		#endregion
 	}
 }

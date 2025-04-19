@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("Development", policy =>
 	{
-		policy.WithOrigins("http://localhost:4200")  // coloque a URL do seu front-end aqui
+		policy.WithOrigins("http://localhost:4200")  //URL do seu front-end aqui
 			  .AllowAnyMethod()
 			  .AllowAnyHeader()
 			  .AllowCredentials();
@@ -31,7 +31,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.ResolverDependencias();
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+
+builder.Services
+	.AddControllers()
+	.AddNewtonsoftJson();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

@@ -5,7 +5,7 @@ namespace DevIO.Business.Intefaces
     public interface IProdutoService : IDisposable
     {
         Task Adicionar(Produto produto);
-        Task Atualizar(Produto produto);
+		Task Atualizar(Produto produto);
         Task<bool> Remover(Guid id);
     }
 }
