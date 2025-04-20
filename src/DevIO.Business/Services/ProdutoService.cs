@@ -83,19 +83,19 @@ namespace DevIO.Business.Services
 
 
 
+		public async Task<bool> Remover(Guid id)
+		{
+			if (id == Guid.Empty) return NotificarERetornar($"ID inválido. {id}");
 
-
-        public async Task<bool> Remover(Guid id)
-        {
 			var produto = await _produtoRepository.ObterPorId(id);
 
-			if (produto != null) 
-            {
+			if (produto != null)
+			{
 				await _produtoRepository.Remover(id);
 				return true;
 			}
-            return NotificarERetornar($"Produto com {id} não encontrado para remoção.");
-			
+			return NotificarERetornar($"Produto com ID: {id} não encontrado para remoção.");
+
 		}
 
 
@@ -109,15 +109,11 @@ namespace DevIO.Business.Services
 		}
 
 
-
-
 		private bool NotificarERetornar(string mensagem)
 		{
 			Notificar(mensagem);
 			return false;
 		}
-
-
 
 
 		public void Dispose()

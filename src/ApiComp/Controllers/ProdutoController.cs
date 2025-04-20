@@ -101,17 +101,13 @@ namespace ApiComp.Controllers
 		[HttpDelete("{id:guid}")]
         public async Task<ActionResult<ProdutoImgViewModel>> ExcluirProduto(Guid id)
         {
-            if (id == Guid.Empty) return BadRequest("ID invàlido.");
-
-            var produtoRemovido =  await _produtoService.Remover(id);
+			var produtoRemovido =  await _produtoService.Remover(id);
             if (produtoRemovido)
             {
 				return NoContent();
 			}
             return CustomResponse();
         }
-
-
 		#endregion
 
 
