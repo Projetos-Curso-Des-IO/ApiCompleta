@@ -24,6 +24,44 @@ namespace DevIO.Business.Services
 
 
 
+
+
+		public async Task<IEnumerable<Produto>?> BuscarTodosProdutos()
+		{
+			{
+				var _produtoRecuperado = await _produtoRepository.ObterProdutosFornecedores();
+				if (!_produtoRecuperado.Any())
+				{
+					NotificarErro($"Nenhum produto foi encontrado(a) no momento.");
+					return null;
+				}
+
+				return _produtoRecuperado;
+			}
+		}
+
+
+
+
+		public async Task<Produto>?ObterProdutoPorId(Guid id)
+		{
+			var _produtoRecuperado = await _produtoRepository.ObterProdutoFornecedor(id);
+			if (_produtoRecuperado==null)
+			{
+				NotificarErro($"Produto não encontrado(a) no momento. ID: {id}");
+				return null;
+			}
+
+			return _produtoRecuperado;
+		}
+
+
+
+
+
+
+
+
 		public async Task Adicionar(Produto produto)
 		{
 			if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
@@ -87,7 +125,5 @@ namespace DevIO.Business.Services
             _produtoRepository?.Dispose();
         }
 
-
-		
 	}
 }

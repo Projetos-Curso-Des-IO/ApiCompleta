@@ -33,32 +33,41 @@ namespace ApiComp.Controllers
             _mapper = mapper;
             _notificador = notificador;
         }
-        #endregion
+		#endregion
 
 
 
-        #region actions
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProdutoImgViewModel>>> ObterTodos()
-        {
-            var _produtoView =  _mapper.Map<IEnumerable<ProdutoImgViewModel>>
-                (await _produtoRepository.ObterProdutosFornecedores());
+		#region actions
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<ProdutoImgViewModel>>> ObterTodos()
+		{
+			var _produto = await _produtoService.BuscarTodosProdutos();
 
-            if(!_produtoView.Any()) return NotFound("Lista vazia");
-            
-            return Ok(_produtoView);
-        }
+			if (_produto == null)
+				return CustomResponse();
+
+			var _produtoView = _mapper.Map<IEnumerable<ProdutoImgViewModel>>(_produto);
+
+			return Ok(_produtoView);
+		}
 
 
 
-        [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<ProdutoImgViewModel>> ObterPorId(Guid id)
-        {
-            var _produtoView = await ObterProdutoPorId(id);
-                if (_produtoView.Value == null) return NotFound($"Produto não encontrado - ID: {id}");
 
-            return CustomResponse(_produtoView);
-        }
+
+		[HttpGet("{id:Guid}")]
+		public async Task<ActionResult<ProdutoImgViewModel>> ObterPorId(Guid id)
+		{
+			var _produto = await _produtoService.ObterProdutoPorId(id);
+
+			if (_produto == null) 
+				return CustomResponse();
+
+			var _produtoView = _mapper.Map<ProdutoImgViewModel>(_produto);
+
+			return Ok(_produtoView);
+		}
+
 
 
 
@@ -68,7 +77,6 @@ namespace ApiComp.Controllers
 		[RequestSizeLimit(52428800)]
 		public async Task<ActionResult<ProdutoViewModel>> CriarProduto(ProdutoImgViewModel produtoViewModel)
 		{
-			//if (produtoViewModel == null) return BadRequest("Fornecedor é inválido, verifique.");
 			if (!ModelState.IsValid) return CustomResponse(ModelState);
 
 			var imagemPrefix = Guid.NewGuid() + "_";
@@ -89,15 +97,6 @@ namespace ApiComp.Controllers
 
 
 		
-		[HttpPost("imagem")]
-		public async Task<ActionResult> CriarImagem(IFormFile file)
-		{
-			return Ok(file);
-		}
-
-
-
-
 
 		[HttpDelete("{id:guid}")]
         public async Task<ActionResult<ProdutoImgViewModel>> ExcluirProduto(Guid id)
@@ -121,15 +120,6 @@ namespace ApiComp.Controllers
 
 
 		#region methods
-        public async Task<ActionResult<ProdutoImgViewModel>> ObterProdutoPorId(Guid id)
-        {            
-			var _produtoView = _mapper.Map<ProdutoImgViewModel>
-                (await _produtoRepository.ObterPorId(id));          
-            return _produtoView;
-        }
-
-
-
 		private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, string imgPrefix)
 		{
 			if (arquivo == null || arquivo.Length == 0)
