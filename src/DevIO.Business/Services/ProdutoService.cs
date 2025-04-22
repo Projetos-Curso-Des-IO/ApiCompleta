@@ -24,9 +24,51 @@ namespace DevIO.Business.Services
 
 
 
+
+
+		public async Task<IEnumerable<Produto>?> BuscarTodosProdutos()
+		{
+			{
+				var _produtoRecuperado = await _produtoRepository.ObterProdutosFornecedores();
+				if (!_produtoRecuperado.Any())
+				{
+					NotificarErro($"Nenhum produto foi encontrado(a) no momento.");
+					return null;
+				}
+
+				return _produtoRecuperado;
+			}
+		}
+
+
+
+
+		public async Task<Produto>?ObterProdutoPorId(Guid id)
+		{
+			var _produtoRecuperado = await _produtoRepository.ObterProdutoFornecedor(id);
+			if (_produtoRecuperado==null)
+			{
+				NotificarErro($"Produto não encontrado(a) no momento. ID: {id}");
+				return null;
+			}
+
+			return _produtoRecuperado;
+		}
+
+
+
+
+
+
+
+
 		public async Task Adicionar(Produto produto)
 		{
 			if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+			if(produto == null)
+			{
+				NotificarErro($"Erro ao salvar fornecedor. Entre em contato com suporte!");
+			}
 
 			await _produtoRepository.Adicionar(produto);
 		}
@@ -45,19 +87,19 @@ namespace DevIO.Business.Services
 
 
 
+		public async Task<bool> Remover(Guid id)
+		{
+			if (id == Guid.Empty) return NotificarERetornar($"ID inválido. {id}");
 
-
-        public async Task<bool> Remover(Guid id)
-        {
 			var produto = await _produtoRepository.ObterPorId(id);
 
-			if (produto != null) 
-            {
+			if (produto != null)
+			{
 				await _produtoRepository.Remover(id);
 				return true;
 			}
-            return NotificarERetornar($"Produto com {id} não encontrado para remoção.");
-			
+			return NotificarERetornar($"Produto com ID: {id} não encontrado para remoção.");
+
 		}
 
 
@@ -71,8 +113,6 @@ namespace DevIO.Business.Services
 		}
 
 
-
-
 		private bool NotificarERetornar(string mensagem)
 		{
 			Notificar(mensagem);
@@ -80,14 +120,10 @@ namespace DevIO.Business.Services
 		}
 
 
-
-
 		public void Dispose()
         {
             _produtoRepository?.Dispose();
         }
 
-
-		
 	}
 }

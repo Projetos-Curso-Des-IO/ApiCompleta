@@ -7,5 +7,8 @@ namespace DevIO.Business.Intefaces
         Task Adicionar(Produto produto);
 		Task Atualizar(Produto produto);
         Task<bool> Remover(Guid id);
-    }
+        Task<IEnumerable<Produto>>BuscarTodosProdutos();
+        Task<Produto> ObterProdutoPorId(Guid id);
+
+	}
 }
