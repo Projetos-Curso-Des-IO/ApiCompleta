@@ -65,6 +65,10 @@ namespace DevIO.Business.Services
 		public async Task Adicionar(Produto produto)
 		{
 			if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+			if(produto == null)
+			{
+				NotificarErro($"Erro ao salvar fornecedor. Entre em contato com suporte!");
+			}
 
 			await _produtoRepository.Adicionar(produto);
 		}

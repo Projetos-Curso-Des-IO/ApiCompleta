@@ -79,17 +79,10 @@ namespace ApiComp.Controllers
 		{
 			if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-			var imagemPrefix = Guid.NewGuid() + "_";
-			if (!await UploadArquivoAlternativo(produtoViewModel.ImagemUpload, imagemPrefix))
+			if (!await UploadArquivoAlternativo(produtoViewModel.ImagemUpload, produtoViewModel))
 			{
 				return CustomResponse(produtoViewModel);
 			}
-
-			var arquivo = produtoViewModel.ImagemUpload.FileName;
-
-			produtoViewModel.Imagem = imagemPrefix + arquivo;
-
-			await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
 
 			return Ok(CustomResponse(produtoViewModel));
 		}
@@ -116,19 +109,23 @@ namespace ApiComp.Controllers
 
 
 		#region methods
-		private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, string imgPrefix)
+		private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, ProdutoImgViewModel produtoView)
 		{
+
+			var imgPrefixo = Guid.NewGuid() + "_";
+
 			if (arquivo == null || arquivo.Length == 0)
 			{
 				NotificarErro("Forneça imagem para este produto!");
 				return false;
 			}
 
+
 			var filePath = Path.Combine
 						(
 							Directory.GetCurrentDirectory(), 
 							"wwwroot/app/demo-webapi/src/assets", 
-							imgPrefix + arquivo.FileName
+							imgPrefixo + arquivo.FileName
 						);
 
 			if (System.IO.File.Exists(filePath))
@@ -137,9 +134,20 @@ namespace ApiComp.Controllers
 				return false;
 			}
 
+
 			//FileStream canal de escrita para arquivo fisico no disco
 			using var stream = new FileStream(filePath, FileMode.Create);
 			await arquivo.CopyToAsync(stream);
+
+
+			var arquivoComNome = produtoView.ImagemUpload.FileName;
+			produtoView.Imagem = imgPrefixo + arquivoComNome;
+
+			if (produtoView != null)
+			{
+				await _produtoService.Adicionar(_mapper.Map<Produto>(produtoView));
+			}
+
 			return true;
 		}
 
