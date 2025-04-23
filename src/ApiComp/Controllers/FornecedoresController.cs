@@ -20,7 +20,7 @@ namespace ApiComp.Controllers
 		private readonly INotificador _notificador;
 		#endregion
 
-		#region ctor
+		#region Ctor
 		public FornecedoresController(IFornecedorRepository fornecedorRepository,
 									   IEnderecoRepository enderecoRepository,	
 									   IMapper mapper, IFornecedorService fornecedorService,
@@ -35,7 +35,7 @@ namespace ApiComp.Controllers
 		#endregion
 
 
-		#region Actions
+		#region ObterTodos
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<FornecedorViewModel>>> ObterTodos()
         {
@@ -44,11 +44,10 @@ namespace ApiComp.Controllers
 
 			return Ok(_fornecedoresView);
         }
-
-		
-
+		#endregion
 
 
+		#region ObterPorId
 		[HttpGet("recuperarPorId/{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> ObterPorId(Guid id)
 		{
@@ -58,11 +57,10 @@ namespace ApiComp.Controllers
 			var _fornecedorView = _mapper.Map <FornecedorViewModel>(_fornecedores);
 			return Ok(CustomResponse(_fornecedorView));
 		}
+		#endregion
 
 
-
-
-
+		#region ObterFornecedorProdutosEndereco
 		[HttpGet("obterFornecedorProdutosEndereco/{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> ObterFornecedorProdutosEndereco(Guid id)
 		{
@@ -72,11 +70,10 @@ namespace ApiComp.Controllers
 			var _forncedorView = _mapper.Map<FornecedorViewModel> (_fornecedor);
 			return Ok(CustomResponse(_forncedorView));
 		}
+		#endregion
 
 
-
-
-
+		#region ObterEnderecoPorFornec
 		[HttpGet("obterEnderecoPorFornecedor/{id:guid}")]
 		public async Task<ActionResult<EnderecoViewModel>> ObterEnderecoPorFornec(Guid id)
 		{
@@ -86,12 +83,10 @@ namespace ApiComp.Controllers
 			var _enderecoView = _mapper.Map<EnderecoViewModel>(_endereco);
 			return Ok(CustomResponse(_enderecoView));
 		}
+		#endregion
 
 
-
-
-
-
+		#region CriarFornecedor
 		[HttpPost]
 		public async Task<ActionResult<FornecedorViewModel>> CriarFornecedor(FornecedorViewModel fornecedorView)
 		{
@@ -100,12 +95,10 @@ namespace ApiComp.Controllers
 			await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(fornecedorView));
 			return Ok(CustomResponse(fornecedorView));
 		}
+		#endregion
 
 
-
-
-
-
+		#region AtulizarFonecedor
 		[HttpPut("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> AtulizarFonecedor(Guid id, FornecedorViewModel fornecedorView)
 		{
@@ -115,10 +108,10 @@ namespace ApiComp.Controllers
 			await _fornecedorService.Atualizar(_mapper.Map<Fornecedor>(fornecedorView));
 			return Ok(CustomResponse(fornecedorView));
 		}
+		#endregion
 
 
-
-
+		#region AtualizarEndereco
 		[HttpPut("atualizarEndereco/{id:guid}")]
 		public async Task<ActionResult<EnderecoViewModel>> AtualizarEndereco(Guid id, EnderecoViewModel enderecoViewModel)
 		{
@@ -128,11 +121,10 @@ namespace ApiComp.Controllers
 			await _fornecedorService.AtualizarEndereco(_mapper.Map<Endereco>(enderecoViewModel));
 			return Ok(CustomResponse(enderecoViewModel));
 		}
+		#endregion
 
 
-
-
-
+		#region DeletarFornecedor
 		[HttpDelete("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> DeletarFornecedor(Guid id)
 		{
