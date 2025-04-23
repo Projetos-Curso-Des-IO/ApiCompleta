@@ -22,7 +22,7 @@ namespace ApiComp.Controllers
         #endregion
 
 
-        #region cto
+        #region Ctor
         public ProdutoController(IProdutoRepository produtoRepository, 
                                  IProdutoService produtoService, 
                                  IMapper mapper, 
@@ -36,8 +36,7 @@ namespace ApiComp.Controllers
 		#endregion
 
 
-
-		#region actions
+		#region Recuperar todos
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<ProdutoImgViewModel>>> ObterTodos()
 		{
@@ -50,12 +49,11 @@ namespace ApiComp.Controllers
 
 			return Ok(_produtoView);
 		}
+        #endregion
 
 
-
-
-
-		[HttpGet("{id:Guid}")]
+        #region Recuperar por id
+        [HttpGet("{id:Guid}")]
 		public async Task<ActionResult<ProdutoImgViewModel>> ObterPorId(Guid id)
 		{
 			var _produto = await _produtoService.ObterProdutoPorId(id);
@@ -67,13 +65,11 @@ namespace ApiComp.Controllers
 
 			return Ok(_produtoView);
 		}
+        #endregion
 
 
-
-
-
-
-		[HttpPost("adicionar")]
+        #region Adicionar
+        [HttpPost("adicionar")]
 		[RequestSizeLimit(52428800)]
 		public async Task<ActionResult<ProdutoViewModel>> CriarProduto(ProdutoImgViewModel produtoViewModel)
 		{
@@ -86,12 +82,11 @@ namespace ApiComp.Controllers
 
 			return Ok(CustomResponse(produtoViewModel));
 		}
+        #endregion
 
 
-
-		
-
-		[HttpDelete("{id:guid}")]
+        #region Remover
+        [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ProdutoImgViewModel>> ExcluirProduto(Guid id)
         {
 			var produtoRemovido =  await _produtoService.Remover(id);
@@ -101,15 +96,11 @@ namespace ApiComp.Controllers
 			}
             return CustomResponse();
         }
-		#endregion
+        #endregion
 
 
-
-
-
-
-		#region methods
-		private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, ProdutoImgViewModel produtoView)
+        #region UploadArquivo
+        private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, ProdutoImgViewModel produtoView)
 		{
 
 			var imgPrefixo = Guid.NewGuid() + "_";
@@ -150,7 +141,6 @@ namespace ApiComp.Controllers
 
 			return true;
 		}
-
 		#endregion
 	}
 }
