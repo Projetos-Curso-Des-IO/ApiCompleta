@@ -1,4 +1,5 @@
-﻿using ApiComp.ViewModels;
+﻿using ApiComp.Extenssions;
+using ApiComp.ViewModels;
 using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
@@ -19,6 +20,7 @@ namespace ApiComp.Controllers
         private readonly IProdutoService _produtoService;
         private readonly IMapper _mapper;
         private readonly INotificador _notificador;
+		private readonly IUploadArquivo _uploadArquivo;
         #endregion
 
 
@@ -26,12 +28,14 @@ namespace ApiComp.Controllers
         public ProdutoController(IProdutoRepository produtoRepository, 
                                  IProdutoService produtoService, 
                                  IMapper mapper, 
-                                 INotificador notificador) : base(notificador)
+                                 INotificador notificador,
+								 IUploadArquivo uploadArquivo) : base(notificador)
         {
             _produtoRepository = produtoRepository;
             _produtoService = produtoService;
             _mapper = mapper;
             _notificador = notificador;
+			_uploadArquivo = uploadArquivo;
         }
 		#endregion
 
@@ -75,12 +79,15 @@ namespace ApiComp.Controllers
 		{
 			if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-			if (!await UploadArquivoAlternativo(produtoViewModel.ImagemUpload, produtoViewModel))
+			var produto = await _uploadArquivo.
+				UploadArquivoAlternativo(produtoViewModel.ImagemUpload, produtoViewModel);
+			
+			if (produto == null)
 			{
-				return CustomResponse(produtoViewModel);
+				return BadRequest(CustomResponse());
 			}
 
-			return Ok(CustomResponse(produtoViewModel));
+			return Ok(CustomResponse(produto));
 		}
         #endregion
 
@@ -99,48 +106,5 @@ namespace ApiComp.Controllers
         #endregion
 
 
-        #region UploadArquivo
-        private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, ProdutoImgViewModel produtoView)
-		{
-
-			var imgPrefixo = Guid.NewGuid() + "_";
-
-			if (arquivo == null || arquivo.Length == 0)
-			{
-				NotificarErro("Forneça imagem para este produto!");
-				return false;
-			}
-
-
-			var filePath = Path.Combine
-						(
-							Directory.GetCurrentDirectory(), 
-							"wwwroot/app/demo-webapi/src/assets", 
-							imgPrefixo + arquivo.FileName
-						);
-
-			if (System.IO.File.Exists(filePath))
-			{
-				NotificarErro("Já existe um arquivo com este nome!");
-				return false;
-			}
-
-
-			//FileStream canal de escrita para arquivo fisico no disco
-			using var stream = new FileStream(filePath, FileMode.Create);
-			await arquivo.CopyToAsync(stream);
-
-
-			var arquivoComNome = produtoView.ImagemUpload.FileName;
-			produtoView.Imagem = imgPrefixo + arquivoComNome;
-
-			if (produtoView != null)
-			{
-				await _produtoService.Adicionar(_mapper.Map<Produto>(produtoView));
-			}
-
-			return true;
-		}
-		#endregion
 	}
 }
