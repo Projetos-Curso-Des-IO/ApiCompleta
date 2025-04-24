@@ -1,4 +1,5 @@
-﻿using DevIO.Business.Intefaces;
+﻿using ApiComp.Extenssions;
+using DevIO.Business.Intefaces;
 using DevIO.Business.Notificacoes;
 using DevIO.Business.Services;
 using DevIO.Data.Context;
@@ -18,6 +19,7 @@ namespace ApiComp.Configuration
             services.AddScoped<IFornecedorService, FornecedorService>();
             services.AddScoped<IProdutoService, ProdutoService>();
             services.AddScoped<INotificador, Notificador>();
+            services.AddScoped<IUploadArquivo, UploadArquivos>();
             return services;
 		}
 	}
