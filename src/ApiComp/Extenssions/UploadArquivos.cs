@@ -55,25 +55,10 @@ namespace ApiComp.Extenssions
 			using var stream = new FileStream(_caminhoDoArquivo, FileMode.Create);
 			await arquivo.CopyToAsync(stream);
 
-
-			var adicionarProdutoService = ExecutarService(produtoView, imagPrefix);
+			var arquivoNome = produtoView.ImagemUpload.FileName;
+			produtoView.Imagem = imagPrefix + arquivoNome;
 			
 			return produtoView;
 		}
-
-
-
-
-		public async Task ExecutarService(ProdutoImgViewModel produtoImgView, String imgPrefix)
-		{
-			var arquivoNome = produtoImgView.ImagemUpload.FileName;
-			produtoImgView.Imagem = imgPrefix + arquivoNome;
-
-			if (produtoImgView != null)
-			{
-				await _produtoService.Adicionar(_mapper.Map<Produto>(produtoImgView));
-			}
-		}
-
 	}
 }

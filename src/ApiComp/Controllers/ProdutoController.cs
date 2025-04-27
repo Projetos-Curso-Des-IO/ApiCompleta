@@ -7,6 +7,7 @@ using DevIO.Business.Notificacoes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
 namespace ApiComp.Controllers
@@ -81,19 +82,46 @@ namespace ApiComp.Controllers
 
 			var produto = await _uploadArquivo.
 				UploadArquivoAlternativo(produtoViewModel.ImagemUpload, produtoViewModel);
-			
-			if (produto == null)
-			{
-				return BadRequest(CustomResponse());
-			}
+
+			if (produto == null) return BadRequest(CustomResponse());
+
+			await _produtoService.Adicionar(_mapper.Map<Produto>(produto));
+
 
 			return Ok(CustomResponse(produto));
 		}
-        #endregion
+		#endregion
 
 
-        #region Remover
-        [HttpDelete("{id:guid}")]
+		#region AtualizarProduto
+		[HttpPut("atualizar/{id:Guid}")]
+		public async Task<ActionResult<ProdutoViewModel>> AtualizarProduto(Guid id, ProdutoImgViewModel produtoImgViewModel)
+		{
+			if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+			var produto = produtoImgViewModel;
+
+			if (!produtoImgViewModel.Imagem.IsNullOrEmpty())
+			{
+				 produto = await _uploadArquivo.
+					UploadArquivoAlternativo(produtoImgViewModel.ImagemUpload, produtoImgViewModel);
+			}
+
+			if(produto != null)
+			{
+				await _produtoService.Atualizar(id, _mapper.Map<Produto>(produto));
+			}
+			
+			return Ok((CustomResponse(produtoImgViewModel)));
+		}
+
+
+
+		#endregion
+
+
+		#region Remover
+		[HttpDelete("{id:guid}")]
         public async Task<ActionResult<ProdutoImgViewModel>> ExcluirProduto(Guid id)
         {
 			var produtoRemovido =  await _produtoService.Remover(id);

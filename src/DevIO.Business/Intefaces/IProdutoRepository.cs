@@ -7,5 +7,6 @@ namespace DevIO.Business.Intefaces
         Task<IEnumerable<Produto>> ObterProdutosPorFornecedor(Guid fornecedorId);
         Task<IEnumerable<Produto>> ObterProdutosFornecedores();
         Task<Produto> ObterProdutoFornecedor(Guid id);
-    }
+		Task<Produto> ObterProdutoPorIdFornecedor(Guid id);
+	}
 }

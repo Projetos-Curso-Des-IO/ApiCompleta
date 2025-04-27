@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using DevIO.Business.Notificacoes;
 using DevIO.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,8 +46,9 @@ namespace DevIO.Data.Repository
             var existingEntity = await DbSet.FindAsync(entity.Id);
 
             if (existingEntity == null)
-            {
-                throw new KeyNotFoundException($"Entidade com ID {entity.Id} não encontrada.");
+            {                
+                throw new KeyNotFoundException($"Erro ao buscar entidade: " +
+                    $"{entity.Id}.{Environment.NewLine} Entre em contato com suporte.");
             }
 
             // Atualiza as propriedades da entidade existente
@@ -71,5 +73,8 @@ namespace DevIO.Data.Repository
         {
             Db?.Dispose();
         }
+
+
+
     }
 }
