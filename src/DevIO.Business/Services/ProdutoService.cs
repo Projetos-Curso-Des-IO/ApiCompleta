@@ -11,6 +11,7 @@ namespace DevIO.Business.Services
         private readonly IProdutoRepository _produtoRepository;
         private readonly IMapper _mapper;
 		private readonly INotificador _notificador;
+		
 
 		public ProdutoService(IProdutoRepository produtoRepository,
 							  INotificador notificador,
@@ -67,7 +68,7 @@ namespace DevIO.Business.Services
 			if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
 			if(produto == null)
 			{
-				NotificarErro($"Erro ao salvar fornecedor. Entre em contato com suporte!");
+				NotificarErro($"Fornecedor inválido!");
 			}
 
 			await _produtoRepository.Adicionar(produto);
@@ -77,12 +78,28 @@ namespace DevIO.Business.Services
 
 
 
-		public async Task Atualizar(Produto produto)
+		public async Task<bool> Atualizar(Guid id,Produto produto)
         {
-            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return false;
 
-            await _produtoRepository.Atualizar(produto);
-        }
+			if (id == Guid.Empty) return NotificarERetornar($"Id inválido: {id}. Verifique!");
+
+			var produtoExistente = await _produtoRepository.ObterProdutoFornecedor(id);
+			if (produtoExistente == null)
+				return NotificarERetornar("Produto não encontrado(a) para atualização.");
+
+			if (produto == null) return NotificarERetornar($"Produto nulo {produto}. Verifique!");
+
+			produtoExistente.FornecedorId = produto.FornecedorId;
+			produtoExistente.Nome = produto.Nome; 
+			produtoExistente.Descricao = produto.Descricao;
+			produtoExistente.Ativo = produto.Ativo;
+			produtoExistente.Valor = produto.Valor;
+
+            await _produtoRepository.Atualizar(produtoExistente);
+
+			return true;
+		}
 
 
 
@@ -98,12 +115,19 @@ namespace DevIO.Business.Services
 				await _produtoRepository.Remover(id);
 				return true;
 			}
-			return NotificarERetornar($"Produto com ID: {id} não encontrado para remoção.");
+			return NotificarERetornar($"Produto com ID: {id} não encontrado(a) para remoção.");
 
 		}
 
 
 
+
+		//protected Task<Produto> ValidarProdutoNulo(Produto produto)
+		//{
+		//	if(produto == null) return 
+		//	var produtoExistente = 
+		//	return 
+		//}
 
 
 

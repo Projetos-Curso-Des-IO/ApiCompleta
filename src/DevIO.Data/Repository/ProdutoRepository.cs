@@ -28,6 +28,12 @@ namespace DevIO.Data.Repository
         }
 
 
+         public async Task<Produto> ObterProdutoPorIdFornecedor(Guid fornecedorId)
+        {
+            return (Produto)await Buscar(p => p.FornecedorId == fornecedorId);
+        }
+
+
 
 	}
 }

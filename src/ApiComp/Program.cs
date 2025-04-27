@@ -2,6 +2,7 @@ using ApiComp.Configuration;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services.AddDbContext<MeuDbContext>(options =>
 		sql => sql.MigrationsAssembly("ApiComp")
 	);
 });
+
+
+builder.Services.AddIdentityConfiguration(builder.Configuration);
+
 
 builder.Services.AddCors(options =>
 {
@@ -55,6 +60,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("Development");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
