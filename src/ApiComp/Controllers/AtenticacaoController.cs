@@ -57,6 +57,33 @@ namespace ApiComp.Controllers
 		#endregion
 
 
+
+		#region login
+
+
+		#endregion
+		[HttpPost("logar-usuario")]
+		public async Task<ActionResult> Logar(LoginViewModel loginView)
+		{
+			if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+			var result = await _signInManager.PasswordSignInAsync(loginView.Email, loginView.Senha, false, true);
+			if (result.Succeeded)
+			{
+				return CustomResponse(loginView);
+			}
+			if (result.IsLockedOut)
+			{
+				NotificarErro("Usuário temporariamente bloqueado por tentativas inválidas");
+			}
+
+			NotificarErro("Usuário ou senha incorretos");
+
+			return CustomResponse(loginView);
+		}
+
+
+
 		#region TraduzirMensagens
 		public List<string> TraduzirMensagens(List<string> msgs)
 		{
