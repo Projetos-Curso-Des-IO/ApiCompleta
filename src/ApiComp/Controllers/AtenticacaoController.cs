@@ -44,12 +44,9 @@ namespace ApiComp.Controllers
 				return CustomResponse(registerUsuario);
 			}
 
-			var erros = result.Errors.Select(e => e.Description).ToList();
-			var mensagesErros = TraduzirMensagens(erros);
-
-			foreach (var msg in erros)
+			foreach (var erro in result.Errors)
 			{
-				NotificarErro(msg);
+				NotificarErro(erro.Description);
 			}
 
 			return CustomResponse(registerUsuario);
@@ -58,10 +55,7 @@ namespace ApiComp.Controllers
 
 
 
-		#region login
-
-
-		#endregion
+		#region logar-usuario
 		[HttpPost("logar-usuario")]
 		public async Task<ActionResult> Logar(LoginViewModel loginView)
 		{
@@ -81,30 +75,8 @@ namespace ApiComp.Controllers
 
 			return CustomResponse(loginView);
 		}
-
-
-
-		#region TraduzirMensagens
-		public List<string> TraduzirMensagens(List<string> msgs)
-		{
-			var listaTraduzidas = new List<string>();
-			foreach (var error in msgs)
-			{
-				if (error.Equals("Passwords must have at least one non alphanumeric character."))
-				{
-					listaTraduzidas.Add("A senha deve conter ao menos um caractere não alfanumérico.");
-				}
-				else if (error.Equals("Passwords must have at least one uppercase ('A'-'Z')."))
-				{
-					listaTraduzidas.Add("A senha deve conter ao menos uma letra maiúscula.");
-				}
-				else
-				{
-					listaTraduzidas.Add(error);
-				}
-			}
-			return listaTraduzidas;
-		}
 		#endregion
+
+
 	}
 }

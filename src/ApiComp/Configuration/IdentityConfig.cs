@@ -1,4 +1,5 @@
 ﻿using ApiComp.Data;
+using ApiComp.Extenssions;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace ApiComp.Configuration
 			services.AddDefaultIdentity<IdentityUser>()
 				.AddRoles<IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddErrorDescriber<IdentityMensagensPortugues>()
 				.AddDefaultTokenProviders();
 
 			return services;
