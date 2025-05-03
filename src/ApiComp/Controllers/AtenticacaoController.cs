@@ -1,7 +1,12 @@
-﻿using ApiComp.ViewModels;
+﻿using ApiComp.Extenssions;
+using ApiComp.ViewModels;
 using DevIO.Business.Intefaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace ApiComp.Controllers
 {
@@ -11,14 +16,17 @@ namespace ApiComp.Controllers
 
 		private readonly SignInManager<IdentityUser> _signInManager;
 		private readonly UserManager<IdentityUser> _userManager;
+		private readonly AppSettings _appSettings;
 
 		#region Ctor
-		public AtenticacaoController(INotificador notificador, 
-									SignInManager<IdentityUser> signInManager, 
-									UserManager<IdentityUser> userManager) : base(notificador)
+		public AtenticacaoController(INotificador notificador,
+									SignInManager<IdentityUser> signInManager,
+									UserManager<IdentityUser> userManager,
+									IOptions<AppSettings> appSettings) : base(notificador)
 		{
 			_signInManager = signInManager;
 			_userManager = userManager;
+			_appSettings = appSettings.Value;
 		}
 		#endregion
 
@@ -41,7 +49,7 @@ namespace ApiComp.Controllers
 			{
 				//autenticação automaticamente , false = não ira se manter após fechar o navegador
 				await _signInManager.SignInAsync(usuario, false);
-				return CustomResponse(registerUsuario);
+				return CustomResponse(GerarJwt());
 			}
 
 			foreach (var erro in result.Errors)
@@ -64,7 +72,7 @@ namespace ApiComp.Controllers
 			var result = await _signInManager.PasswordSignInAsync(loginView.Email, loginView.Senha, false, true);
 			if (result.Succeeded)
 			{
-				return CustomResponse(loginView);
+				return CustomResponse(GerarJwt());
 			}
 			if (result.IsLockedOut)
 			{
@@ -74,6 +82,26 @@ namespace ApiComp.Controllers
 			NotificarErro("Usuário ou senha incorretos");
 
 			return CustomResponse(loginView);
+		}
+		#endregion
+
+
+
+		#region GerarJwt
+		private string GerarJwt()
+		{
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+			var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
+			{
+				Issuer = _appSettings.Emissor,
+				Audience = _appSettings.ValidoEm,
+				Expires = DateTime.UtcNow.AddHours(_appSettings.ExpiracaoHoras),
+				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+			});
+
+			var encodedToken = tokenHandler.WriteToken(token);
+			return encodedToken;
 		}
 		#endregion
 
