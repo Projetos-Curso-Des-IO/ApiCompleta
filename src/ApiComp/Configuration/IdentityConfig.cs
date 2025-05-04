@@ -17,19 +17,23 @@ namespace ApiComp.Configuration
 			IConfiguration configuration)
 		{
 
+			#region Configuração do Entity Framework DbContext - Banco
 			services.AddDbContext<ApplicationDbContext>(options =>
 				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
 				sql => sql.MigrationsAssembly("ApiComp")));
+			#endregion
 
+
+			#region Configuração da Identity
 			services.AddDefaultIdentity<IdentityUser>()
 				.AddRoles<IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddErrorDescriber<IdentityMensagensPortugues>()
 				.AddDefaultTokenProviders();
+			#endregion
 
-
-			//JWT
-
+			
+			#region JWT
 			var appSettingsSection = configuration.GetSection("AppSettings");
 			services.Configure<AppSettings>(appSettingsSection);
 
@@ -55,7 +59,7 @@ namespace ApiComp.Configuration
 					ValidIssuer = appSettings.Emissor // Define o valor esperado para o emissor (Issuer)
 				};
 			});
-
+			#endregion
 
 
 			return services;
