@@ -3,12 +3,15 @@ using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
 using DevIO.Business.Notificacoes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.AccessControl;
+using static ApiComp.Extenssions.CustomAuthorize;
 
 namespace ApiComp.Controllers
 {
 
+	[Authorize]
 	[Route("api/fornecedores")]
 	public class FornecedoresController : MainController
 	{
@@ -87,6 +90,7 @@ namespace ApiComp.Controllers
 
 
 		#region CriarFornecedor
+		[ClaimsAuthorize("Fornecedor", "CriarFornecedor")]
 		[HttpPost]
 		public async Task<ActionResult<FornecedorViewModel>> CriarFornecedor(FornecedorViewModel fornecedorView)
 		{
@@ -99,6 +103,7 @@ namespace ApiComp.Controllers
 
 
 		#region AtulizarFonecedor
+		[ClaimsAuthorize("Fornecedor", "AtulizarFonecedor")]
 		[HttpPut("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> AtulizarFonecedor(Guid id, FornecedorViewModel fornecedorView)
 		{
@@ -112,6 +117,7 @@ namespace ApiComp.Controllers
 
 
 		#region AtualizarEndereco
+		[ClaimsAuthorize("Endereco", "AtualizarEndereco")]
 		[HttpPut("atualizarEndereco/{id:guid}")]
 		public async Task<ActionResult<EnderecoViewModel>> AtualizarEndereco(Guid id, EnderecoViewModel enderecoViewModel)
 		{
@@ -125,6 +131,7 @@ namespace ApiComp.Controllers
 
 
 		#region DeletarFornecedor
+		[ClaimsAuthorize("Fornecedor", "DeletarFornecedor")]
 		[HttpDelete("{id:Guid}")]
 		public async Task<ActionResult<FornecedorViewModel>> DeletarFornecedor(Guid id)
 		{
@@ -138,7 +145,7 @@ namespace ApiComp.Controllers
 
 
 		#region	Private Methods
-		public async Task<FornecedorViewModel> ObterFornecedorEndereco(Guid id)
+		private async Task<FornecedorViewModel> ObterFornecedorEndereco(Guid id)
 		{
 			var _fornecedor = await _fornecedorRepository.ObterFornecedorEndereco(id);
 			var _fornecedorViewModel = _mapper.Map<FornecedorViewModel>(_fornecedor);
