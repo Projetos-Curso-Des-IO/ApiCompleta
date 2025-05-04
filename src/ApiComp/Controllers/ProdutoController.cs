@@ -4,6 +4,7 @@ using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
 using DevIO.Business.Notificacoes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace ApiComp.Controllers
 {
+	[Authorize]
     [Route("api/produto")]
     [ApiController]
     public class ProdutoController : MainController
@@ -41,7 +43,7 @@ namespace ApiComp.Controllers
 		#endregion
 
 
-		#region Recuperar todos
+		#region Recuperar todos		
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<ProdutoImgViewModel>>> ObterTodos()
 		{
@@ -101,7 +103,8 @@ namespace ApiComp.Controllers
 
 			var produto = produtoImgViewModel;
 
-			if (!produtoImgViewModel.Imagem.IsNullOrEmpty())
+			//if (!produtoImgViewModel.Imagem.IsNullOrEmpty())
+			if (produtoImgViewModel.Imagem != null)
 			{
 				 produto = await _uploadArquivo.
 					UploadArquivoAlternativo(produtoImgViewModel.ImagemUpload, produtoImgViewModel);
