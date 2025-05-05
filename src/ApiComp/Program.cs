@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("Development", policy =>
 	{
-		policy.WithOrigins("http://localhost:4200")  //URL do seu front-end aqui
+		policy.WithOrigins("http://localhost:4200", "https://localhost:7159", "http://localhost:3001")  //URL do seu front-end aqui
 			  .AllowAnyMethod()
 			  .AllowAnyHeader()
 			  .AllowCredentials();
