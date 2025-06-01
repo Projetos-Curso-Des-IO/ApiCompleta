@@ -45,6 +45,7 @@ namespace ApiComp.Controllers
 
 
 		#region Recuperar todos		
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<ProdutoImgViewModel>>> ObterTodos()
 		{
