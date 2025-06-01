@@ -20,6 +20,10 @@ namespace ApiComp.Configuration
             services.AddScoped<IProdutoService, ProdutoService>();
             services.AddScoped<INotificador, Notificador>();
             services.AddScoped<IUploadArquivo, UploadArquivos>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IUser, AspNetUser>();
+
             return services;
 		}
 	}

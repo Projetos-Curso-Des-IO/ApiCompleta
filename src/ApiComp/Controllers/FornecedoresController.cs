@@ -27,7 +27,8 @@ namespace ApiComp.Controllers
 		public FornecedoresController(IFornecedorRepository fornecedorRepository,
 									   IEnderecoRepository enderecoRepository,	
 									   IMapper mapper, IFornecedorService fornecedorService,
-									   INotificador notificador) : base(notificador)
+									   INotificador notificador,
+									   IUser user) : base(notificador, user)
 		{
 			_fornecedorRepository = fornecedorRepository;
 			_enderecoRepository = enderecoRepository;
@@ -39,6 +40,7 @@ namespace ApiComp.Controllers
 
 
 		#region ObterTodos
+		[ClaimsAuthorize("Fornecedor", "ObterTodos")]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<FornecedorViewModel>>> ObterTodos()
         {

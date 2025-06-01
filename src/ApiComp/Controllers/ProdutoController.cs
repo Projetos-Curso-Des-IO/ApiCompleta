@@ -32,7 +32,8 @@ namespace ApiComp.Controllers
                                  IProdutoService produtoService, 
                                  IMapper mapper, 
                                  INotificador notificador,
-								 IUploadArquivo uploadArquivo) : base(notificador)
+								 IUploadArquivo uploadArquivo,
+								 IUser user) : base(notificador, user)
         {
             _produtoRepository = produtoRepository;
             _produtoService = produtoService;
@@ -54,7 +55,13 @@ namespace ApiComp.Controllers
 
 			var _produtoView = _mapper.Map<IEnumerable<ProdutoImgViewModel>>(_produto);
 
-			return Ok(_produtoView);
+			var _prodtudoViewUsuario = new
+			{
+				produto = _produtoView,
+				usuarioCadastro = User.GetUserId()
+			};
+
+			return Ok(_prodtudoViewUsuario);
 		}
         #endregion
 
@@ -103,7 +110,6 @@ namespace ApiComp.Controllers
 
 			var produto = produtoImgViewModel;
 
-			//if (!produtoImgViewModel.Imagem.IsNullOrEmpty())
 			if (produtoImgViewModel.Imagem != null)
 			{
 				 produto = await _uploadArquivo.

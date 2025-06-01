@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,11 +24,13 @@ namespace ApiComp.Controllers
 		public AtenticacaoController(INotificador notificador,
 									SignInManager<IdentityUser> signInManager,
 									UserManager<IdentityUser> userManager,
-									IOptions<AppSettings> appSettings) : base(notificador)
+									IOptions<AppSettings> appSettings,
+									IUser user) : base(notificador, user)
 		{
 			_signInManager = signInManager;
 			_userManager = userManager;
 			_appSettings = appSettings.Value;
+			
 		}
 		#endregion
 
@@ -73,8 +76,20 @@ namespace ApiComp.Controllers
 			var result = await _signInManager.PasswordSignInAsync(loginView.Email, loginView.Senha, false, true);
 			if (result.Succeeded)
 			{
-				return CustomResponse(await GerarJwt(loginView.Email));
+				var token = await GerarJwt(loginView.Email);
+
+				var response = new
+				{
+					Token = token,
+					Email = User.GetUserEmail(),
+					Id = User.GetUserId(),
+					Nome = User.Identity.Name
+				};
+
+				return CustomResponse(response);
 			}
+
+
 			if (result.IsLockedOut)
 			{
 				NotificarErro("Usuário temporariamente bloqueado por tentativas inválidas");

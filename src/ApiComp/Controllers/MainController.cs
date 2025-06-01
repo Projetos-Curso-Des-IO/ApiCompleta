@@ -13,11 +13,23 @@ namespace ApiComp.Controllers
 	
 
 		private readonly INotificador _notificador;
+		public readonly IUser AppUser;
+
+		protected Guid UsuarioId { get; set; }
+		public bool UsuarioAutenticado { get; set; }
 
 		#region cto
-		protected MainController(INotificador notificador)
+		protected MainController(INotificador notificador, IUser appUser)
 		{
 			_notificador = notificador;
+			AppUser = appUser;
+
+
+			if (appUser.IsAuthenticated())
+			{
+				UsuarioId = appUser.GetUserId();
+				UsuarioAutenticado = true;
+			}
 		}
 		#endregion
 
