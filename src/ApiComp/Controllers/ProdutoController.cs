@@ -62,7 +62,7 @@ namespace ApiComp.Controllers
 			};
 
 			return Ok(_prodtudoViewUsuario);
-		}
+		} //
         #endregion
 
 
