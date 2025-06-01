@@ -24,11 +24,24 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("Development", policy =>
 	{
-		policy.WithOrigins("http://localhost:4200", "https://localhost:7159", "http://localhost:3001")  //URL do seu front-end aqui
+		policy.WithOrigins("" +
+				"http://localhost:4200", 
+				"https://localhost:7159", 
+				"http://localhost:3001")
 			  .AllowAnyMethod()
 			  .AllowAnyHeader()
 			  .AllowCredentials();
 	});
+
+
+	options.AddPolicy("Production", policy =>
+	{
+		policy.WithOrigins("" + "http://localhost:3001")
+			  .AllowAnyMethod()
+			  .AllowAnyHeader()
+			  .AllowCredentials();
+	});
+
 });
 
 builder.Services.ResolverDependencias();
@@ -44,17 +57,21 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+Console.WriteLine("Ambiente atual: " + app.Environment.EnvironmentName);
+
 if (app.Environment.IsDevelopment())
 {
+	app.UseCors("Development");
 	app.MapOpenApi();
+	Console.WriteLine("Ambiente if: Development");
 }
 else
 {
+	app.UseCors("Production");
 	app.UseHsts();
 	app.UseHttpsRedirection();
+	Console.WriteLine("Ambiente if: Production");
 }
-
-app.UseCors("Development");
 
 app.UseAuthentication();
 

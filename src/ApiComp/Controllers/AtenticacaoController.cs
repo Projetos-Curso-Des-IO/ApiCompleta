@@ -1,6 +1,7 @@
 ﻿using ApiComp.Extenssions;
 using ApiComp.ViewModels;
 using DevIO.Business.Intefaces;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
