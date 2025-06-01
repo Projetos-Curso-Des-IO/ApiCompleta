@@ -18,9 +18,7 @@ builder.Services.AddDbContext<MeuDbContext>(options =>
 	);
 });
 
-
 builder.Services.AddIdentityConfiguration(builder.Configuration);
-
 
 builder.Services.AddCors(options =>
 {
@@ -33,14 +31,9 @@ builder.Services.AddCors(options =>
 	});
 });
 
-
 builder.Services.ResolverDependencias();
 
-//builder.Services.AddControllers();
-
-builder.Services
-	.AddControllers()
-	.AddNewtonsoftJson();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -51,13 +44,15 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
 	app.MapOpenApi();
 }
-
-app.UseHttpsRedirection();
+else
+{
+	app.UseHsts();
+	app.UseHttpsRedirection();
+}
 
 app.UseCors("Development");
 
