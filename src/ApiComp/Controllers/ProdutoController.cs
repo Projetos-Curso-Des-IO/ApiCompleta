@@ -14,7 +14,9 @@ using System.Threading.Tasks;
 namespace ApiComp.Controllers
 {
 	[Authorize]
-    [Route("api/produto")]
+	[ApiVersion("2.0")]
+	[ApiVersion("1.0", Deprecated = true)]
+    [Route("api/v{version:apiVersion}/produto")]
     [ApiController]
     public class ProdutoController : MainController
     {

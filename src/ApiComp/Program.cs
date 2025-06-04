@@ -48,6 +48,19 @@ builder.Services.ResolverDependencias();
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
+builder.Services.AddApiVersioning(option =>
+{
+	option.AssumeDefaultVersionWhenUnspecified = true;
+	option.DefaultApiVersion = new ApiVersion(1, 0);
+	option.ReportApiVersions = true;
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+	options.GroupNameFormat = "'v'VVV";
+	options.SubstituteApiVersionInUrl = true;
+});
+
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
 	options.SuppressModelStateInvalidFilter = true;
