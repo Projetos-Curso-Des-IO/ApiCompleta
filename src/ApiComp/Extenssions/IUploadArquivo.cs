@@ -1,5 +1,4 @@
-﻿using ApiComp.Controllers;
-using ApiComp.ViewModels;
+﻿using ApiComp.ViewModels;
 
 namespace ApiComp.Extenssions
 {

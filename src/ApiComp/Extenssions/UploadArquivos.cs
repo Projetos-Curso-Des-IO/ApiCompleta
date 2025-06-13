@@ -1,5 +1,4 @@
-﻿using ApiComp.Controllers;
-using ApiComp.ViewModels;
+﻿using ApiComp.ViewModels;
 using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;

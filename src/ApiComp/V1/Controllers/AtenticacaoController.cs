@@ -1,4 +1,5 @@
-﻿using ApiComp.Extenssions;
+﻿using ApiComp.ControllerPrincipal;
+using ApiComp.Extenssions;
 using ApiComp.ViewModels;
 using DevIO.Business.Intefaces;
 using Microsoft.AspNetCore.Cors;
@@ -11,7 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ApiComp.Controllers
+namespace ApiComp.V1.Controllers
 {
 	[Route("api/conta")]
 	public class AtenticacaoController : MainController

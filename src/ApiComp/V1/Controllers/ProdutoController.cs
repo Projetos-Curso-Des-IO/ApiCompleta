@@ -1,4 +1,5 @@
-﻿using ApiComp.Extenssions;
+﻿using ApiComp.ControllerPrincipal;
+using ApiComp.Extenssions;
 using ApiComp.ViewModels;
 using AutoMapper;
 using DevIO.Business.Intefaces;
@@ -11,11 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
-namespace ApiComp.Controllers
+namespace ApiComp.V1.Controllers
 {
 	[Authorize]
-	[ApiVersion("2.0")]
-	[ApiVersion("1.0", Deprecated = true)]
+	[ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/produto")]
     [ApiController]
     public class ProdutoController : MainController
@@ -47,7 +47,7 @@ namespace ApiComp.Controllers
 
 
 		#region Recuperar todos		
-		[AllowAnonymous]
+		//[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<ProdutoImgViewModel>>> ObterTodos()
 		{
@@ -65,7 +65,7 @@ namespace ApiComp.Controllers
 			};
 
 			return Ok(_prodtudoViewUsuario);
-		} //
+		} 
         #endregion
 
 
@@ -124,7 +124,7 @@ namespace ApiComp.Controllers
 				await _produtoService.Atualizar(id, _mapper.Map<Produto>(produto));
 			}
 			
-			return Ok((CustomResponse(produtoImgViewModel)));
+			return Ok(CustomResponse(produtoImgViewModel));
 		}
 
 
