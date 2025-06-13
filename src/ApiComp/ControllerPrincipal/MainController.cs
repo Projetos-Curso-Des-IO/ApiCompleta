@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace ApiComp.Controllers
+namespace ApiComp.ControllerPrincipal
 {
     
     [ApiController]

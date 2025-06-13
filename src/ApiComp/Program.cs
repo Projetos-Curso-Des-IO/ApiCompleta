@@ -1,7 +1,9 @@
 using ApiComp.Configuration;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +45,25 @@ builder.Services.AddCors(options =>
 	});
 
 });
+
+builder.Services.AddSwaggerConfig();
+
+//builder.Services.AddSwaggerGen(c =>
+//{
+//	var provider = builder.Services.BuildServiceProvider()
+//		.GetRequiredService<IApiVersionDescriptionProvider>();
+
+//	foreach (var description in provider.ApiVersionDescriptions)
+//	{
+//		c.SwaggerDoc(description.GroupName, new Microsoft.OpenApi.Models.OpenApiInfo
+//		{
+//			Title = $"Api curso {description.ApiVersion}",
+//			Version = description.ApiVersion.ToString()
+//		});
+//	}
+//});
+
+
 
 builder.Services.ResolverDependencias();
 
@@ -89,6 +110,21 @@ else
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+//app.UseSwagger();
+
+//var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+//app.UseSwaggerUI(c =>
+//{
+//	foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+//	{
+//		c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+//			$"Minha API {description.GroupName.ToUpperInvariant()}");
+//	}
+//});
+var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+app.UseSwaggerConfig(apiVersionDescriptionProvider);
 
 app.MapControllers();
 

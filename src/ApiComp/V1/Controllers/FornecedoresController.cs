@@ -1,4 +1,5 @@
-﻿using ApiComp.ViewModels;
+﻿using ApiComp.ControllerPrincipal;
+using ApiComp.ViewModels;
 using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
@@ -8,10 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.AccessControl;
 using static ApiComp.Extenssions.CustomAuthorize;
 
-namespace ApiComp.Controllers
+namespace ApiComp.V1.Controllers
 {
 
 	[Authorize]
+	[ApiVersion("1.0")]
+	[Route("api/v{version:apiVersion}/fornecedor")]
 	[Route("api/fornecedores")]
 	public class FornecedoresController : MainController
 	{
